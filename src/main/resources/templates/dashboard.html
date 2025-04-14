@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+<div>
+    <div class="navbar bg-zinc-800 shadow-sm">
+        <div class="flex-1">
+            <a class="btn btn-ghost text-xl text-white">daisyUI</a>
+        </div>
+        <div class="flex-none">
+            <ul class="menu menu-horizontal px-1">
+                <li>
+                    <details>
+                        <summary class="text-white">sukree sinthupinyo</summary>
+                        <ul class="bg-zinc-600 rounded-t-none p-2">
+                            <li><a class="text-white">manage account</a></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post">
+                                    <input class="text-white" type="submit" value="Sign Out"/>
+                                </form>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
