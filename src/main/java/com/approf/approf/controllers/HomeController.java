@@ -36,18 +36,22 @@ public class HomeController {
         String role = auth.getAuthorities().iterator().next().getAuthority();
         model.addAttribute("username", username);
         model.addAttribute("role", role);
-        model.addAttribute("months", Arrays.asList("January 2024", "February 2024", "March 2024"));
         LocalDate now = LocalDate.now();
         LocalDate firstDayOfMonth = now.withDayOfMonth(1);
         int daysToSubtract = firstDayOfMonth.getDayOfWeek().getValue() % 7;
         LocalDate startDate = firstDayOfMonth.minusDays(daysToSubtract);
-
         List<LocalDate> calendarDates = IntStream.range(0, 42)
                 .mapToObj(i -> startDate.plusDays(i))
                 .collect(Collectors.toList());
+        model.addAttribute("today", LocalDate.now().getYear() + "-" + LocalDate.now().getMonthValue() + "-"  + LocalDate.now().getDayOfMonth());
         model.addAttribute("calendarDates", calendarDates);
         model.addAttribute("month", now.getMonth().toString().toLowerCase() + " " + now.getYear());
-        return "dashboard";
+        if (role.equals("ROLE_STUDENT")) {
+            return "dashboard";
+        }
+        else {
+            return "professorDashboard";
+        }
     }
 
     @RequestMapping("/book")
