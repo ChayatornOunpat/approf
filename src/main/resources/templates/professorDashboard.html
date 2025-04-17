@@ -142,13 +142,20 @@
                     <!-- Modal -->
                     <dialog id="availabilityModal" class="modal" x-ref="modal">
                         <div class="modal-box w-11/12 max-w-5xl">
-                            <h3 class="text-lg font-bold"><span x-text="selectedDay"></span></h3>
-                            <p class="py-4">Click the button below to close</p>
-                            <div class="modal-action">
-                                <form method="dialog">
-                                    <button class="btn" x-on:click="$refs.modal.close()">Close</button>
-                                </form>
-                            </div>
+                            <h3 class="text-lg font-bold text-center"><span x-text="selectedDay"></span></h3>
+                            <form th:action="@{/dashboard}" method="post" th:object="${hoursForm}">
+                                <div class="flex flex-wrap gap-4 justify-center mb-4">
+                                    <th:block th:each="hour : ${#numbers.sequence(9, 17)}">
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox" th:field="*{workingHours}" th:value="${hour}" class="toggle">
+                                            <span th:text="${hour + ':00'}"></span>
+                                        </label>
+                                    </th:block>
+                                </div>
+                                <div class="modal-action">
+                                    <button type="submit" class="btn">Submit</button>
+                                </div>
+                            </form>
                         </div>
                     </dialog>
                 </div>

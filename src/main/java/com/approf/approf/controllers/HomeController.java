@@ -1,5 +1,6 @@
 package com.approf.approf.controllers;
 
+import com.approf.approf.DTO.HoursForm;
 import com.approf.approf.Model.UserModel;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,6 +37,7 @@ public class HomeController {
         String role = auth.getAuthorities().iterator().next().getAuthority();
         model.addAttribute("username", username);
         model.addAttribute("role", role);
+        model.addAttribute("hoursForm", new HoursForm());
         LocalDate now = LocalDate.now();
         LocalDate firstDayOfMonth = now.withDayOfMonth(1);
         int daysToSubtract = firstDayOfMonth.getDayOfWeek().getValue() % 7;
