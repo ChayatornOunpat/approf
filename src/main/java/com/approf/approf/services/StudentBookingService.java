@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @Service
@@ -42,7 +43,7 @@ public class StudentBookingService {
      * @param bookingDate The date of the booking
      * @return The created StudentBook entity
      */
-    public StudentBook createBooking(String profUsername, Date bookingDate) {
+    public StudentBook createBooking(String profUsername, Timestamp bookingDate) {
         // Get current authenticated user
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String studentUsername = auth.getName();

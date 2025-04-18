@@ -44,31 +44,47 @@
             <tr>
                 <th></th>
                 <th>Name</th>
-                <th>Job</th>
-                <th>Favorite Color</th>
+                <th>Availability</th>
             </tr>
             </thead>
             <tbody>
-            <!-- row 1 -->
-            <tr class="hover:bg-base-300">
-                <th>1</th>
-                <td>Cy Ganderton</td>
-                <td>Quality Control Specialist</td>
-                <td>Blue</td>
-            </tr>
-            <!-- row 2 -->
-            <tr class="hover:bg-base-300">
-                <th>2</th>
-                <td>Hart Hagerty</td>
-                <td>Desktop Support Technician</td>
-                <td>Purple</td>
-            </tr>
-            <!-- row 3 -->
-            <tr class="hover:bg-base-300">
-                <th>3</th>
-                <td>Brice Swyre</td>
-                <td>Tax Accountant</td>
-                <td>Red</td>
+            <!-- loop this -->
+
+            <tr th:each="professor, iterStat : ${professors}">
+                <form th:action="@{/book}" method="post">
+                    <input type="hidden" name="username" th:value="${professor.username}"/>
+                    <th th:text="${iterStat.count}"></th>
+                    <td th:text="${professor.username}"></td>
+                    <td>
+                        <div th:with="availMap=${availability.get(professor.username)}">
+                            <div th:if="${availMap != null}">
+                                <div th:if="${!#maps.isEmpty(availMap)}">
+                                    <div th:each="entry : ${availMap}">
+                                        <div>
+                                <span th:if="${!#lists.isEmpty(entry.value)}">
+                                    <strong th:text="${entry.key}">2025-04-20</strong>:
+                                    <label th:each="hour : ${entry.value}" style="margin-right: 4px;">
+                                        <input type="radio" class="radio" name="availability"
+                                               th:value="${entry.key + ' ' + hour}" required/>
+                                        <span th:text="${hour + ':00'}"></span>
+                                    </label>
+                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${#maps.isEmpty(availMap)}">
+                                    <em>No availability</em>
+                                </div>
+                            </div>
+                            <div th:if="${availMap == null}">
+                                <em>No availability</em>
+                            </div>
+                        </div>
+                    </td>
+                    <th>
+                        <button type="submit" class="btn bg-zinc-200 shadow-md btn-xs">Book</button>
+                    </th>
+                </form>
             </tr>
             </tbody>
         </table>

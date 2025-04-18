@@ -9,5 +9,6 @@ import java.util.List;
 @Setter
 public class HoursForm {
     private List<Integer> workingHours;
+    private List<Integer> day;
 }
 

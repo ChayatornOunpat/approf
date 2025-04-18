@@ -11,9 +11,13 @@
             return {
                 selectedDay: '',
                 thisDay: new Date(0),
+                listDay: [],
                 openModal(event) {
                     const day = event.currentTarget.dataset.day + " " + event.currentTarget.dataset.month;
                     this.selectedDay = day;
+                    this.listDay.push(event.currentTarget.dataset.year)
+                    this.listDay.push(event.currentTarget.dataset.nmonth)
+                    this.listDay.push(event.currentTarget.dataset.day)
                     this.thisDay = new Date(event.currentTarget.dataset.year + "-" + event.currentTarget.dataset.nmonth + "-" +event.currentTarget.dataset.day)
                     const today = new Date(event.currentTarget.dataset.today);
                     if (this.thisDay >= today){
@@ -132,12 +136,29 @@
                 </div>
                 <div class="grid grid-cols-7 divide-gray-200" x-data="calendarModal()">
                     <div th:each="date : ${calendarDates}"
-                         th:attr="data-day=${date.dayOfMonth}, data-month=${date.getMonth().toString().toLowerCase()}, data-nmonth=${date.getMonthValue()}, data-year=${date.getYear()}, data-today=${today}"
+                         th:attr="data-day=${date.dayOfMonth},
+                         data-month=${date.getMonth().toString().toLowerCase()},
+                         data-nmonth=${date.getMonthValue()},
+                         data-year=${date.getYear()},
+                         data-today=${today}"
                          x-on:click="openModal($event)"
                          class="p-3.5 bg-gray-50 xl:aspect-auto lg:h-28 border-b border-r border-gray-200 flex justify-between flex-col max-lg:items-center min-h-[70px] transition-all duration-300 hover:bg-gray-100">
+
+                        <!-- Display the day -->
                         <span class="text-xs font-semibold text-gray-500 flex items-center justify-center w-7 h-7 rounded-full"
                               th:text="${date.dayOfMonth}"></span>
+
+                        <!-- Display availability if exists -->
+                        <div th:if="${availability[date.toString()] != null}" class="overflow-y-auto space-y-2">
+                            <div th:each="time : ${availability.get(date.toString())}">
+                                <div class="rounded p-1.5 border-l-2 border-purple-600 bg-purple-50">
+                                    <p class="text-xs font-semibold text-purple-600" th:text="${time + ':00 available'}"></p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+
 
                     <!-- Modal -->
                     <dialog id="availabilityModal" class="modal" x-ref="modal">
@@ -151,6 +172,7 @@
                                             <span th:text="${hour + ':00'}"></span>
                                         </label>
                                     </th:block>
+                                    <input type="hidden" th:field="*{day}" :value="listDay"/>
                                 </div>
                                 <div class="modal-action">
                                     <button type="submit" class="btn">Submit</button>

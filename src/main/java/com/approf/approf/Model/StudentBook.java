@@ -1,26 +1,29 @@
 package com.approf.approf.Model;
 
-import java.sql.Date;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+
 @Entity
 @Getter
 @Setter
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"username", "prof_username", "date"})
+)
 public class StudentBook {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String prof_username;
 
-    @Column(unique = false, nullable = false)
-    private Date date;
+    @Column(nullable = false)
+    private Timestamp date;
 }
