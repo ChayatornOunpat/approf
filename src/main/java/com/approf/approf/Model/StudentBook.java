@@ -22,7 +22,7 @@ public class StudentBook {
     private String username;
 
     @Column(nullable = false)
-    private String prof_username;
+    private String profUsername;
 
     @Column(nullable = false)
     private Timestamp date;

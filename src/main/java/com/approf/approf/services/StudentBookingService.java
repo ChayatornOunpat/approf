@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,15 +27,9 @@ public class StudentBookingService {
      * @param username Username to look up, or null to use current user
      * @return The StudentBook entity or null if not found
      */
-    public StudentBook findByUsername(String username) {
-        if (username == null) {
-            // Get current authenticated user if no username provided
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            username = auth.getName();
-        }
-        
-        Optional<StudentBook> studentBook = studentBookingRepository.findByUsername(username);
-        return studentBook.orElse(null);
+    public List<StudentBook> findByUsername(String username) {
+        List<StudentBook> studentBook = studentBookingRepository.findByUsername(username);
+        return studentBook;
     }
     
     /**
@@ -51,12 +46,17 @@ public class StudentBookingService {
         // Create new booking
         StudentBook booking = new StudentBook();
         booking.setUsername(studentUsername);
-        booking.setProf_username(profUsername);
+        booking.setProfUsername(profUsername);
         booking.setDate(bookingDate);
         
         // Save to database (this performs the INSERT)
         return studentBookingRepository.save(booking);
     }
+
+    public List<StudentBook> findByProfUsername(String username) {
+        return studentBookingRepository.findByProfUsername(username);
+    }
+
     
     /**
      * Alternative method that takes a complete StudentBook object

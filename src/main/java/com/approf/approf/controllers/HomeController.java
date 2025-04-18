@@ -2,9 +2,11 @@ package com.approf.approf.controllers;
 
 import com.approf.approf.DTO.HoursForm;
 import com.approf.approf.Model.ProfAvail;
+import com.approf.approf.Model.StudentBook;
 import com.approf.approf.Model.UserModel;
 import com.approf.approf.Model.UserRole;
 import com.approf.approf.services.ProfAvailService;
+import com.approf.approf.services.StudentBookingService;
 import com.approf.approf.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,6 +30,7 @@ import java.util.stream.IntStream;
 public class HomeController {
     private final ProfAvailService profAvailService;
     private final UserService userService;
+    private final StudentBookingService studentBookingService;
 
     @RequestMapping("/")
     public String index() {
@@ -65,11 +70,34 @@ public class HomeController {
         model.addAttribute("today", LocalDate.now().getYear() + "-" + LocalDate.now().getMonthValue() + "-"  + LocalDate.now().getDayOfMonth());
         model.addAttribute("month", now.getMonth().toString().toLowerCase() + " " + now.getYear());
         if (role.equals("ROLE_STUDENT")) {
+            List<StudentBook> bookings = studentBookingService.findByUsername(username);
+            createBookedTimeMap(model, bookings);
             return "dashboard";
         }
         else {
+            List<StudentBook> bookings = studentBookingService.findByProfUsername(username);
+            createBookedTimeMap(model, bookings);
             return "professorDashboard";
         }
+    }
+
+    private void createBookedTimeMap(Model model, List<StudentBook> bookings) {
+        HashMap<String, List<Integer>> bookedTime = new HashMap<>();
+
+        bookings.forEach(booking -> {
+            Timestamp time = booking.getDate();
+            LocalDateTime localDateTime = time.toLocalDateTime();
+
+            // Format date as yyyy-MM-dd
+            String dateKey = localDateTime.toLocalDate().toString(); // yyyy-MM-dd
+
+            // Get hour of the day (0–23)
+            int hour = localDateTime.getHour();
+
+            // Add hour to the list for that date
+            bookedTime.computeIfAbsent(dateKey, k -> new ArrayList<>()).add(hour);
+        });
+        model.addAttribute("bookedTime", bookedTime);
     }
 
     @RequestMapping("/book")

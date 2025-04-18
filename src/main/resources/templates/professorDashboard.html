@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -12,19 +13,37 @@
                 selectedDay: '',
                 thisDay: new Date(0),
                 listDay: [],
+                occupied: [],
                 openModal(event) {
                     const day = event.currentTarget.dataset.day + " " + event.currentTarget.dataset.month;
                     this.selectedDay = day;
+                    this.occupied = JSON.parse(event.currentTarget.dataset.occupied || "[]");
+                    console.log(this.occupied)
                     this.listDay.push(event.currentTarget.dataset.year)
                     this.listDay.push(event.currentTarget.dataset.nmonth)
                     this.listDay.push(event.currentTarget.dataset.day)
                     this.thisDay = new Date(event.currentTarget.dataset.year + "-" + event.currentTarget.dataset.nmonth + "-" +event.currentTarget.dataset.day)
                     const today = new Date(event.currentTarget.dataset.today);
                     if (this.thisDay >= today){
+                        this.disableOccupiedSlots();
                         this.$refs.modal.showModal();
                     } else {
                         alert("the date selected has already passed")
                     }
+                },
+                disableOccupiedSlots() {
+                    // Loop through checkboxes and disable the ones that are occupied
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"][name="workingHours"]');
+                    checkboxes.forEach(cb => {
+                        const hour = parseInt(cb.value, 10);
+                        if (this.occupied.includes(hour)) {
+                            cb.disabled = true;
+                            cb.classList.add('disabled'); // optional: style with CSS
+                        } else {
+                            cb.disabled = false;
+                            cb.classList.remove('disabled');
+                        }
+                    });
                 }
             }
         }
@@ -140,7 +159,8 @@
                          data-month=${date.getMonth().toString().toLowerCase()},
                          data-nmonth=${date.getMonthValue()},
                          data-year=${date.getYear()},
-                         data-today=${today}"
+                         data-today=${today},
+                         data-occupied=${bookedTime.get(date.toString())}"
                          x-on:click="openModal($event)"
                          class="p-3.5 bg-gray-50 xl:aspect-auto lg:h-28 border-b border-r border-gray-200 flex justify-between flex-col max-lg:items-center min-h-[70px] transition-all duration-300 hover:bg-gray-100">
 
@@ -149,10 +169,19 @@
                               th:text="${date.dayOfMonth}"></span>
 
                         <!-- Display availability if exists -->
-                        <div th:if="${availability[date.toString()] != null}" class="overflow-y-auto space-y-2">
-                            <div th:each="time : ${availability.get(date.toString())}">
-                                <div class="rounded p-1.5 border-l-2 border-purple-600 bg-purple-50">
-                                    <p class="text-xs font-semibold text-purple-600" th:text="${time + ':00 available'}"></p>
+                        <div class="overflow-y-auto space-y-2">
+                            <div th:if="${availability[date.toString()] != null}">
+                                <div th:each="time : ${availability.get(date.toString())}">
+                                    <div class="rounded p-1.5 border-l-2 border-purple-600 bg-purple-50">
+                                        <p class="text-xs font-semibold text-purple-600" th:text="${time + ':00 available'}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${bookedTime[date.toString()] != null}">
+                                <div th:each="time : ${bookedTime.get(date.toString())}">
+                                    <div class="rounded p-1.5 border-l-2 border-purple-600 bg-green-50">
+                                        <p class="text-xs font-semibold text-purple-600" th:text="${time + ':00 booked'}"></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
